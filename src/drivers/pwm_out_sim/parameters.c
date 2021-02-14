@@ -57,7 +57,7 @@ PARAM_DEFINE_INT32(PWM_SIM_MODE, 0);
  * @group PWM
  * @value 0 NONE
  */
-PARAM_DEFINE_INT32(PWM_SIM_FUNC1, 0);
+PARAM_DEFINE_INT32(PWM_SIM_FUNC1, 1);
 
 /**
  * Actuator function assigned to AUX2
@@ -69,7 +69,7 @@ PARAM_DEFINE_INT32(PWM_SIM_FUNC1, 0);
  * @group PWM
  * @value 0 NONE
  */
-PARAM_DEFINE_INT32(PWM_SIM_FUNC2, 0);
+PARAM_DEFINE_INT32(PWM_SIM_FUNC2, 1);
 
 /**
  * Actuator function assigned to AUX3
@@ -81,7 +81,7 @@ PARAM_DEFINE_INT32(PWM_SIM_FUNC2, 0);
  * @group PWM
  * @value 0 NONE
  */
-PARAM_DEFINE_INT32(PWM_SIM_FUNC3, 0);
+PARAM_DEFINE_INT32(PWM_SIM_FUNC3, 1);
 
 /**
  * Actuator function assigned to AUX4
@@ -93,7 +93,7 @@ PARAM_DEFINE_INT32(PWM_SIM_FUNC3, 0);
  * @group PWM
  * @value 0 NONE
  */
-PARAM_DEFINE_INT32(PWM_SIM_FUNC4, 0);
+PARAM_DEFINE_INT32(PWM_SIM_FUNC4, 1);
 
 /**
  * Actuator function assigned to AUX5
@@ -105,7 +105,7 @@ PARAM_DEFINE_INT32(PWM_SIM_FUNC4, 0);
  * @group PWM
  * @value 0 NONE
  */
-PARAM_DEFINE_INT32(PWM_SIM_FUNC5, 0);
+PARAM_DEFINE_INT32(PWM_SIM_FUNC5, 1);
 
 /**
  * Actuator function assigned to AUX6
@@ -117,7 +117,7 @@ PARAM_DEFINE_INT32(PWM_SIM_FUNC5, 0);
  * @group PWM
  * @value 0 NONE
  */
-PARAM_DEFINE_INT32(PWM_SIM_FUNC6, 0);
+PARAM_DEFINE_INT32(PWM_SIM_FUNC6, 1);
 
 /**
  * Actuator function assigned to AUX7
@@ -129,7 +129,7 @@ PARAM_DEFINE_INT32(PWM_SIM_FUNC6, 0);
  * @group PWM
  * @value 0 NONE
  */
-PARAM_DEFINE_INT32(PWM_SIM_FUNC7, 0);
+PARAM_DEFINE_INT32(PWM_SIM_FUNC7, 1);
 
 /**
  * Actuator function assigned to AUX8
@@ -141,7 +141,7 @@ PARAM_DEFINE_INT32(PWM_SIM_FUNC7, 0);
  * @group PWM
  * @value 0 NONE
  */
-PARAM_DEFINE_INT32(PWM_SIM_FUNC8, 0);
+PARAM_DEFINE_INT32(PWM_SIM_FUNC8, 1);
 
 
 /******************************************************************************
