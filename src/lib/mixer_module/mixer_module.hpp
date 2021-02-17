@@ -55,9 +55,6 @@
 #include <uORB/topics/test_motor.h>
 
 
-// Used for a custom callback to the OutputControl module
-class OutputControlInterface;
-
 /**
  * @class OutputModuleInterface
  * Base class for an output module.
@@ -191,8 +188,6 @@ public:
 	void updateParams() override;
 
 protected:
-
-	// OutputControlInterface *_ointerface {nullptr};
 
 private:
 	void handleCommands();

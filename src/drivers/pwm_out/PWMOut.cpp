@@ -78,12 +78,7 @@ int PWMOut::init()
 		PX4_ERR("FAILED registering class device");
 	}
 
-	// Legacy mixer-module operation flag
-	_legacy_mixer_mode = (_p_pwm_aux_mode.get() == 0) ? true : false;
-
 	_mixing_output.setDriverInstance(_class_instance);
-
-	PX4_INFO("Initialising with mixer_mode = %d (PWM_AUX_MODE = %d)", _legacy_mixer_mode, _p_pwm_aux_mode.get());
 
 	/* force a reset of the update rate */
 	_current_update_rate = 0;
@@ -595,6 +590,7 @@ void PWMOut::update_params()
 
 	if (_class_instance == CLASS_DEVICE_PRIMARY) {
 		prefix = "PWM_MAIN";
+		/// TODO: This should somehow be used as the prefix used for MixingOutput
 
 		param_get(param_find("PWM_MAIN_MIN"), &pwm_min_default);
 		param_get(param_find("PWM_MAIN_MAX"), &pwm_max_default);
@@ -745,13 +741,9 @@ void PWMOut::update_params()
 
 	_num_disarmed_set = num_disarmed_set;
 
-	/// TODO: Merge with dagar's work above (I think we could clean this up...)
-	// update_pwm_rev_mask();
-	// update_pwm_trims();
+	/// TODO: All of the above should be handled by MixingOutput once a prefix is set
 
 	_mixing_output.updateParams();
-
-	_legacy_mixer_mode = (_p_pwm_aux_mode.get() == 0) ? true : false;
 }
 
 int PWMOut::ioctl(file *filp, int cmd, unsigned long arg)
