@@ -63,7 +63,8 @@ public:
 	/** @see ModuleBase::print_status() */
 	int print_status() override;
 
-	const char *get_param_prefix() override { return "PWM_SIM"; }
+	// When running SITL, this is the only output module active, so it's safe to use the MAIN prefix
+	const char *get_param_prefix() override { return "PWM_MAIN"; }
 
 	int ioctl(device::file_t *filp, int cmd, unsigned long arg) override;
 

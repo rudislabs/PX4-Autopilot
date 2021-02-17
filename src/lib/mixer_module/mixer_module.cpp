@@ -46,7 +46,7 @@ static constexpr unsigned n_out = output_control_s::NUM_OUTPUT_CONTROL_GROUPS;
 
 MixingOutput::MixingOutput(uint8_t max_num_outputs, OutputModuleInterface &interface,
 			   SchedulingPolicy scheduling_policy,
-			   bool support_esc_calibration, bool ramp_up) //, OutputControlInterface *ointerface)
+			   bool support_esc_calibration, bool ramp_up)
 	: ModuleParams(&interface),
 	  _control_subs{
 	{&interface, ORB_ID(actuator_controls_0)},
