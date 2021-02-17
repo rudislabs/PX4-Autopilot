@@ -1938,21 +1938,6 @@ err_out_no_test:
 	return rv;
 }
 
-int PWMOut::mavlink_servo_test(int servo_id, float value)
-{
-	output_control_s controls = {};
-	controls.timestamp = hrt_absolute_time();
-	controls.n_outputs = 1;
-	controls.function[0] = output_control_s::FUNCTION_MAVLINK_SERVO0 + servo_id;
-	controls.value[0] = value;
-
-	PX4_INFO("Publishing output_control_mavlink with servo %d, value %.3f", servo_id, (double)value);
-
-	_output_control_mavlink_pub.publish(controls);
-
-	return PX4_OK;
-}
-
 int PWMOut::custom_command(int argc, char *argv[])
 {
 	PortMode new_mode = PORT_MODE_UNSET;
@@ -2100,18 +2085,6 @@ int PWMOut::custom_command(int argc, char *argv[])
 
 	if (!strcmp(verb, "test")) {
 		return test();
-	}
-
-	if (!strcmp(verb, "mavtest")) {
-		int servo_id = 0;
-		float servo_val = 1.f;
-
-		if (argc > 2) {
-			servo_id = strtol(argv[1], nullptr, 0);
-			servo_val = strtof(argv[2], nullptr);
-		}
-
-		return PWMOut::get_instance()->mavlink_servo_test(servo_id, servo_val);
 	}
 
 	return print_usage("unknown command");

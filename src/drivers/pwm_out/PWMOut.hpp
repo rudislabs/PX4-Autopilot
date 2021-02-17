@@ -143,9 +143,6 @@ public:
 
 	static int test();
 
-	// Test the use of MAVLink servo setup by publishing to output_control_mavlink
-	int mavlink_servo_test(int servo_id, float value);
-
 	virtual int	ioctl(file *filp, int cmd, unsigned long arg);
 
 	virtual int	init();
@@ -181,9 +178,6 @@ private:
 	uORB::SubscriptionInterval _parameter_update_sub{ORB_ID(parameter_update), 1_s};
 
 	uORB::SubscriptionData<actuator_armed_s> _armed_sub{ORB_ID(actuator_armed)};
-	uORB::SubscriptionData<safety_s> _safety_sub{ORB_ID(safety)};
-
-	uORB::Publication<output_control_s> _output_control_mavlink_pub {ORB_ID(output_control_mavlink)};
 
 	unsigned	_num_outputs{0};
 	int		_class_instance{-1};
@@ -194,8 +188,6 @@ private:
 	bool		_test_mode{false};
 
 	unsigned	_num_disarmed_set{0};
-
-	bool		_legacy_mixer_mode{true}; ///< Mode switch on mixer-file vs. ControlAllocator output
 
 	perf_counter_t	_cycle_perf;
 	perf_counter_t	_interval_perf;
@@ -219,8 +211,4 @@ private:
 	PWMOut(const PWMOut &) = delete;
 	PWMOut operator=(const PWMOut &) = delete;
 
-
-	DEFINE_PARAMETERS_CUSTOM_PARENT(OutputModuleInterface,
-					(ParamInt<px4::params::PWM_AUX_MODE>)    _p_pwm_aux_mode
-				       );
 };
