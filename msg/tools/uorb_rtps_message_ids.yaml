@@ -329,8 +329,15 @@ rtps:
     id: 156
   - msg: gimbal_manager_set_manual_control
     id: 157
+<<<<<<< HEAD
   - msg: airspeed_wind
     id: 158
+=======
+  - msg: output_control
+    id: 158
+  - msg: output_feedback
+    id: 159
+>>>>>>> uorb-rtps: Add new uORB topics
   ########## multi topics: begin ##########
   - msg: actuator_controls_0
     id: 170
@@ -436,4 +443,19 @@ rtps:
   - msg: estimator_wind
     id: 203
     alias: wind
+  - msg: output_control_ca
+    id: 204
+    alias: output_control
+  - msg: output_control_mavlink
+    id: 205
+    alias: output_control
+  - msg: output_control_mc
+    id: 206
+    alias: output_control
+  - msg: output_control_fw
+    id: 207
+    alias: output_control
+  - msg: output_control_gimbal
+    id: 208
+    alias: output_control
   ########## multi topics: end ##########
