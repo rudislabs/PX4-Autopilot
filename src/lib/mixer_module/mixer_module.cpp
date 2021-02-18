@@ -56,7 +56,6 @@ MixingOutput::MixingOutput(uint8_t max_num_outputs, OutputModuleInterface &inter
 	{&interface, ORB_ID(actuator_controls_4)},
 	{&interface, ORB_ID(actuator_controls_5)},
 	{&interface, ORB_ID(output_control_ca)},
-	{&interface, ORB_ID(output_control_mixer)},
 	{&interface, ORB_ID(output_control_mavlink)},
 	{&interface, ORB_ID(output_control_internal)},
 
