@@ -4271,6 +4271,8 @@ The commander module contains the state machine for mode switching and failsafe 
 			"Flight mode", false);
 	PRINT_MODULE_USAGE_COMMAND("lockdown");
 	PRINT_MODULE_USAGE_ARG("off", "Turn lockdown off", true);
+	PRINT_MODULE_USAGE_COMMAND_DESCR("servo", "Command a MAVLink servo");
+	PRINT_MODULE_USAGE_ARG("{id} {value}", "Set servo {id} to a normalized {value} in range [-1,1]", false);
 #endif
 	PRINT_MODULE_USAGE_DEFAULT_COMMANDS();
 
