@@ -156,16 +156,10 @@ void MixingOutput::updateParams()
 
 			_groups_required |= (1 << (n_act + 0));
 
-		} else if (func == output_control_s::FUNCTION_MIXER) {
-			/// TODO: The idea here was to refactor the mixer to be a standalone task/WorkItem
-			///       and publish to this topic...
-			// 	_groups_required |= (1 << (n_act + 1));
-
 		} else if (func >= output_control_s::FUNCTION_MAVLINK_SERVO0 &&
 			   func <= output_control_s::FUNCTION_MAVLINK_SERVO7) {
 
 			_groups_required |= (1 << (n_act + 2));
-			// PX4_INFO("Enabling group MAVLINK");
 
 		} else if (func != output_control_s::FUNCTION_NONE) {
 			_groups_required |= (1 << (n_act + 3));
