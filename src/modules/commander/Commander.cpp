@@ -884,14 +884,24 @@ Commander::handle_command(const vehicle_command_s &cmd)
 
 	case vehicle_command_s::VEHICLE_CMD_DO_SET_SERVO: {
 			output_control_s controls {};
+
+			// Initialize all values to NAN [denotes 'not set']
+			for (unsigned i = 0; i < output_control_s::MAX_ACTUATORS; i++) {
+				controls.value[i] = NAN;
+			}
+
 			controls.timestamp = hrt_absolute_time();
-			controls.n_outputs = 1;
-			controls.function[0] = output_control_s::FUNCTION_MAVLINK_SERVO0 + (int)cmd.param1;
-			controls.value[0] = cmd.param2;
+			int index = cmd.param1;
 
-			_output_control_pub.publish(controls);
+			if (index >= 0 && index < output_control_s::MAX_ACTUATORS) {
+				controls.value[index] = cmd.param2;
 
-			cmd_result = vehicle_command_s::VEHICLE_CMD_RESULT_ACCEPTED;
+				_output_control_pub.publish(controls);
+				cmd_result = vehicle_command_s::VEHICLE_CMD_RESULT_ACCEPTED;
+
+			} else {
+				cmd_result = vehicle_command_s::VEHICLE_CMD_RESULT_DENIED;
+			}
 		}
 		break;
 
@@ -905,45 +915,15 @@ Commander::handle_command(const vehicle_command_s &cmd)
 
 			output_control_s controls {};
 			controls.timestamp = hrt_absolute_time();
-			unsigned cnt = 0;
 
-			if (PX4_ISFINITE(cmd.param1)) {
-				controls.function[cnt] = output_control_s::FUNCTION_MAVLINK_SERVO0;
-				controls.value[cnt] = cmd.param1;
-				cnt++;
-			}
-
-			if (PX4_ISFINITE(cmd.param2)) {
-				controls.function[cnt] = output_control_s::FUNCTION_MAVLINK_SERVO1;
-				controls.value[cnt] = cmd.param2;
-				cnt++;
-			}
-
-			if (PX4_ISFINITE(cmd.param3)) {
-				controls.function[cnt] = output_control_s::FUNCTION_MAVLINK_SERVO2;
-				controls.value[cnt] = cmd.param3;
-				cnt++;
-			}
-
-			if (PX4_ISFINITE(cmd.param4)) {
-				controls.function[cnt] = output_control_s::FUNCTION_MAVLINK_SERVO3;
-				controls.value[cnt] = cmd.param4;
-				cnt++;
-			}
-
-			if (PX4_ISFINITE(cmd.param5)) {
-				controls.function[cnt] = output_control_s::FUNCTION_MAVLINK_SERVO4;
-				controls.value[cnt] = cmd.param5;
-				cnt++;
-			}
-
-			if (PX4_ISFINITE(cmd.param6)) {
-				controls.function[cnt] = output_control_s::FUNCTION_MAVLINK_SERVO5;
-				controls.value[cnt] = cmd.param6;
-				cnt++;
-			}
-
-			controls.n_outputs = cnt;
+			controls.value[0] = cmd.param1;
+			controls.value[1] = cmd.param2;
+			controls.value[2] = cmd.param3;
+			controls.value[3] = cmd.param4;
+			controls.value[4] = cmd.param5;
+			controls.value[5] = cmd.param6;
+			controls.value[6] = NAN;
+			controls.value[7] = NAN;
 
 			_output_control_pub.publish(controls);
 

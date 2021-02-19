@@ -57,7 +57,9 @@ MixingOutput::MixingOutput(uint8_t max_num_outputs, OutputModuleInterface &inter
 	{&interface, ORB_ID(actuator_controls_5)},
 	{&interface, ORB_ID(output_control_ca)},
 	{&interface, ORB_ID(output_control_mavlink)},
-	{&interface, ORB_ID(output_control_internal)},
+	{&interface, ORB_ID(output_control_mc)},
+	{&interface, ORB_ID(output_control_fw)},
+	{&interface, ORB_ID(output_control_gimbal)},
 
 },
 _output_module_prefix(interface.get_param_prefix()),
@@ -132,8 +134,6 @@ void MixingOutput::updateParams()
 
 	/** Update Function Mappings */
 
-	/// TODO: Do we need any sort of mode switch?  Disable use of mixers, perhaps?
-
 	updateParamValues("FUNC", _assigned_function);
 	updateFailsafeValues();
 	updateDisarmedValues();
@@ -159,10 +159,22 @@ void MixingOutput::updateParams()
 		} else if (func >= output_control_s::FUNCTION_MAVLINK_SERVO0 &&
 			   func <= output_control_s::FUNCTION_MAVLINK_SERVO7) {
 
+			_groups_required |= (1 << (n_act + 1));
+
+		} else if (func >= output_control_s::FUNCTION_MC_MOTOR1 &&
+			   func <= output_control_s::FUNCTION_MC_MOTOR8) {
+
 			_groups_required |= (1 << (n_act + 2));
 
-		} else if (func != output_control_s::FUNCTION_NONE) {
+		} else if (func >= output_control_s::FUNCTION_AILERON1 &&
+			   func <= output_control_s::FUNCTION_ENGINE2) {
+
 			_groups_required |= (1 << (n_act + 3));
+
+		} else if (func >= output_control_s::FUNCTION_GIMBAL_ROLL &&
+			   func <= output_control_s::FUNCTION_CAMERA_ZOOM) {
+
+			_groups_required |= (1 << (n_act + 4));
 
 		}
 	}
@@ -442,7 +454,7 @@ bool MixingOutput::update()
 	/* get controls for required topics */
 	for (unsigned i = 0; i < actuator_controls_s::NUM_ACTUATOR_CONTROL_GROUPS; i++) {
 		if (_groups_subscribed & (1 << i)) {
-			if (_control_subs[i].copy(&_controls[i])) {
+			if (_control_subs[i].copy(&_mixer_controls[i])) {
 				n_updates++;
 			}
 
@@ -450,10 +462,10 @@ bool MixingOutput::update()
 			if (i == 0 && _armed.in_esc_calibration_mode) {
 
 				/* Set all controls to 0 */
-				memset(&_controls[i], 0, sizeof(_controls[i]));
+				memset(&_mixer_controls[i], 0, sizeof(_mixer_controls[i]));
 
 				/* except thrust to maximum. */
-				_controls[i].control[actuator_controls_s::INDEX_THROTTLE] = 1.0f;
+				_mixer_controls[i].control[actuator_controls_s::INDEX_THROTTLE] = 1.0f;
 
 				/* Switch off the output limit ramp for the calibration. */
 				_output_limit.state = OUTPUT_LIMIT_STATE_ON;
@@ -475,37 +487,55 @@ bool MixingOutput::update()
 
 	/* get output controls for required topics */
 
-	for (unsigned grp = n_act; grp < n_act + n_out; grp++) {
+	for (unsigned i = 0; i < n_out; i++) {
+		const unsigned grp = n_act + i;
+
 		if (_groups_subscribed & (1 << grp)) {
-			output_control_s controls;
-
-			if (_control_subs[grp].copy(&controls)) {
+			if (_control_subs[n_act + i].copy(&_output_controls[i])) {
 				n_updates++;
-
-				for (uint8_t i = 0; i < controls.n_outputs; i++) {
-					auto func = controls.function[i];
-
-					if (func == 0) {
-						continue;
-					}
-
-					// Map the current control function to the correct output(s)
-					for (uint8_t j = 0; j < _max_num_outputs; j++) {
-						if (func == _assigned_function[j]) {
-							_current_inputs[j] = controls.value[i];
-							mixed_outputs_mask |= (1 << j);
-							mixed_num_outputs = (j > mixed_num_outputs) ? (j + 1) : mixed_num_outputs;
-						}
-					}
-				}
 			}
 		}
 	}
 
-	// Copy over the mixer values
-	for (uint8_t i = 0; i < _max_num_outputs; i++) {
-		if (_assigned_function[i] == output_control_s::FUNCTION_MIXER) {
-			_current_inputs[i] = mixer_outputs[i];
+	// Map the current control function to the correct output(s)
+	/// TODO: Only update values if not NAN
+	for (unsigned i = 0; i < _max_num_outputs; i++) {
+		const int32_t func = _assigned_function[i];
+		float val = NAN;
+
+		if (func == output_control_s::FUNCTION_MIXER) {
+			val = mixer_outputs[i];
+
+		} else if (func >= output_control_s::FUNCTION_CA0 &&
+			   func <= output_control_s::FUNCTION_CA15) {
+
+			val = _output_controls[0].value[func - output_control_s::FUNCTION_CA0];
+
+		} else if (func >= output_control_s::FUNCTION_MAVLINK_SERVO0 &&
+			   func <= output_control_s::FUNCTION_MAVLINK_SERVO7) {
+
+			val = _output_controls[1].value[func - output_control_s::FUNCTION_MAVLINK_SERVO0];
+
+		} else if (func >= output_control_s::FUNCTION_MC_MOTOR1 &&
+			   func <= output_control_s::FUNCTION_MC_MOTOR8) {
+
+			val = _output_controls[2].value[func - output_control_s::FUNCTION_MC_MOTOR1];
+
+		} else if (func >= output_control_s::FUNCTION_AILERON1 &&
+			   func <= output_control_s::FUNCTION_ENGINE2) {
+
+			val = _output_controls[3].value[func - output_control_s::FUNCTION_AILERON1];
+
+		} else if (func >= output_control_s::FUNCTION_GIMBAL_ROLL &&
+			   func <= output_control_s::FUNCTION_CAMERA_ZOOM) {
+
+			val = _output_controls[4].value[func - output_control_s::FUNCTION_GIMBAL_ROLL];
+		}
+
+		if (PX4_ISFINITE(val)) {
+			_current_inputs[i] = val;
+			mixed_outputs_mask |= (1 << i);
+			mixed_num_outputs = (i > mixed_num_outputs) ? (i + 1) : mixed_num_outputs;
 		}
 	}
 
@@ -594,7 +624,7 @@ MixingOutput::updateLatencyPerfCounter(const actuator_outputs_s &actuator_output
 	// use first valid timestamp_sample for latency tracking
 	for (int i = 0; i < actuator_controls_s::NUM_ACTUATOR_CONTROL_GROUPS; i++) {
 		const bool required = _groups_required & (1 << i);
-		const hrt_abstime &timestamp_sample = _controls[i].timestamp_sample;
+		const hrt_abstime &timestamp_sample = _mixer_controls[i].timestamp_sample;
 
 		if (required && (timestamp_sample > 0)) {
 			perf_set_elapsed(_control_latency_perf, actuator_outputs.timestamp - timestamp_sample);
@@ -652,7 +682,7 @@ int MixingOutput::controlCallback(uintptr_t handle, uint8_t control_group, uint8
 {
 	const MixingOutput *output = (const MixingOutput *)handle;
 
-	input = output->_controls[control_group].control[control_index];
+	input = output->_mixer_controls[control_group].control[control_index];
 
 	/* limit control input */
 	input = math::constrain(input, -1.f, 1.f);
