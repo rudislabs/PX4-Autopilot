@@ -267,8 +267,8 @@ private:
 	uORB::PublicationMulti<actuator_outputs_s> _outputs_pub{ORB_ID(actuator_outputs)};
 	uORB::PublicationMulti<multirotor_motor_limits_s> _to_mixer_status{ORB_ID(multirotor_motor_limits)}; 	///< mixer status flags
 
-	actuator_controls_s _controls[actuator_controls_s::NUM_ACTUATOR_CONTROL_GROUPS] {};
-	// output_controls_s _out_control[output_control_s::NUM_OUTPUT_CONTROL_GROUPS] {};
+	actuator_controls_s _mixer_controls[actuator_controls_s::NUM_ACTUATOR_CONTROL_GROUPS] {};
+	output_control_s _output_controls[output_control_s::NUM_OUTPUT_CONTROL_GROUPS] {};
 	actuator_armed_s _armed{};
 
 	uint16_t _assigned_function[MAX_ACTUATORS] {}; ///< 'output_control' function assigned to every physical output
