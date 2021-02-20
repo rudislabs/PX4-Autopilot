@@ -487,11 +487,11 @@ bool MixingOutput::update()
 
 	/* get output controls for required topics */
 
-	for (unsigned i = 0; i < n_out; i++) {
+	for (unsigned i = 0; i < output_control_s::NUM_OUTPUT_CONTROL_GROUPS; i++) {
 		const unsigned grp = n_act + i;
 
-		if (_groups_subscribed & (1 << grp)) {
-			if (_control_subs[n_act + i].copy(&_output_controls[i])) {
+		if (_groups_required & (1 << grp)) {
+			if (_control_subs[n_act + i].update(&_output_controls[i])) {
 				n_updates++;
 			}
 		}
