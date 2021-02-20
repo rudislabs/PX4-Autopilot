@@ -98,7 +98,7 @@ public:
 
 	MixingOutput &mixingOutput() { return _mixing_output; }
 
-	const char *get_param_prefix() override { return "CAN_ACT"; }
+	const char *get_param_prefix() override { return "UCAN0_ACT"; }
 
 protected:
 	void Run() override;
