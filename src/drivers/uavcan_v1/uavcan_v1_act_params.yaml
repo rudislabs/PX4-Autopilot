@@ -1,60 +1,57 @@
-__max_num_config_instances: &max_num_config_instances 8
+__max_num_config_instances: &max_num_config_instances 16
 
-module_name: pwm_out
+module_name: uavcan_v1
 
 parameters:
-    - group: PWM Outputs
+    - group: UAVCAN
       definitions:
 
-        PWM_EXTRA_RATE:
-            description:
-                short: PWM extra output frequency
-                long: |
-                    Set to 400 for industry default or 1000 for high frequency ESCs.
-                    Set to 0 for Oneshot125.
-            type: int32
-            unit: Hz
-            min: -1
-            max: 2000
-            default: 50
+        # UCAN1_ACT_RATE:
+        #     description:
+        #         short: UAVCAN v1 actuator output frequency
+        #     type: int32
+        #     unit: Hz
+        #     min: -1
+        #     max: 400
+        #     default: 100
 
-        PWM_EXTRA_MIN:
+        UCAN1_ACT_MIN:
             description:
-                short: PWM extra minimum value
+                short: UAVCAN v1 actuator minimum value
                 long: |
                     Set to 1000 for industry default or 900 to increase servo travel.
             type: int32
             unit: us
-            min: 800
-            max: 1400
+            min: 0
+            max: 8191
             default: 1000
 
-        PWM_EXTRA_MAX:
+        UCAN1_ACT_MAX:
             description:
-                short: PWM extra maximum value
+                short: UAVCAN v1 actuator maximum value
                 long: |
                     Set to 2000 for industry default or 2100 to increase servo travel.
             type: int32
             unit: us
             min: 1600
-            max: 2200
+            max: 8191
             default: 2000
 
-        PWM_EXTRA_DISARM:
+        UCAN1_ACT_DISARM:
             description:
-                short: PWM extra disarmed value
+                short: UAVCAN v1 actuator disarmed value
                 long: |
                     This is the PWM pulse the autopilot is outputting if not armed.
                     The main use of this parameter is to silence ESCs when they are disarmed.
             type: int32
             unit: us
             min: 0
-            max: 2200
-            default: 1500
+            max: 8191
+            default: 900
 
-        PWM_EXTRA_FUNC${i}:
+        UCAN1_ACT_FUNC${i}:
             description:
-                short: PWM extra ${i} output function
+                short: UAVCAN v1 actuator ${i} output function
                 long: |
                     This is the function to be output on each pin
             type: enum
@@ -90,37 +87,37 @@ parameters:
             instance_start: 1
             default: 1
 
-        PWM_EXTRA_MIN${i}:
+        UCAN1_ACT_MIN${i}:
             description:
-                short: PWM extra ${i} minimum value
+                short: UAVCAN v1 actuator ${i} minimum value
                 long: |
                     This is the minimum PWM pulse the autopilot is allowed to output.
-                    When set to -1 the value for PWM_EXTRA_MIN will be used
+                    When set to -1 the value for PWM_MIN will be used
             type: int32
             unit: us
             min: -1
-            max: 1600
+            max: 8191
             num_instances: *max_num_config_instances
             instance_start: 1
             default: -1
 
-        PWM_EXTRA_MAX${i}:
+        UCAN1_ACT_MAX${i}:
             description:
-                short: PWM extra ${i} maximum value
+                short: UAVCAN v1 actuator ${i} maximum value
                 long: |
                     This is the maximum PWM pulse the autopilot is allowed to output.
-                    When set to -1 the value for PWM_EXTRA_MAX will be used
+                    When set to -1 the value for PWM_MAX will be used
             type: int32
             unit: us
             min: -1
-            max: 2150
+            max: 8191
             num_instances: *max_num_config_instances
             instance_start: 1
             default: -1
 
-        PWM_EXTRA_FAIL${i}:
+        UCAN1_ACT_FAIL${i}:
             description:
-                short: PWM extra ${i} failsafe value
+                short: UAVCAN v1 actuator ${i} failsafe value
                 long: |
                     This is the PWM pulse the autopilot is outputting if in failsafe mode.
                     When set to -1 the value is set automatically depending if the actuator
@@ -128,28 +125,28 @@ parameters:
             type: int32
             unit: us
             min: 0
-            max: 2150
+            max: 8191
             num_instances: *max_num_config_instances
             instance_start: 1
             default: 0
 
-        PWM_EXTRA_DIS${i}:
+        UCAN1_ACT_DIS${i}:
             description:
-                short: PWM extra ${i} disarmed value
+                short: UAVCAN v1 actuator ${i} disarmed value
                 long: |
                     This is the PWM pulse the autopilot is outputting if not armed.
-                    When set to -1 the value for PWM_EXTRA_DISARM will be used
+                    When set to -1 the value for PWM_DISARMED will be used
             type: int32
             unit: us
             min: -1
-            max: 2150
+            max: 8191
             num_instances: *max_num_config_instances
             instance_start: 1
             default: -1
 
-        PWM_EXTRA_TRIM${i}:
+        UCAN1_ACT_TRIM${i}:
             description:
-                short: PWM extra ${i} trim value
+                short: UAVCAN v1 actuator ${i} trim value
                 long: |
                     Set to normalized offset
             type: float
@@ -160,9 +157,9 @@ parameters:
             instance_start: 1
             default: 0
 
-        PWM_EXTRA_REV${i}:
+        UCAN1_ACT_REV${i}:
             description:
-                short: PWM extra ${i} reverse value
+                short: UAVCAN v1 actuator ${i} reverse value
                 long: |
                     Enable to invert the channel.
                     Warning: Use this parameter when connected to a servo only.
@@ -172,14 +169,12 @@ parameters:
             instance_start: 1
             default: 0
 
-        PWM_EXTRA_RATE${i}:
-            description:
-                short: PWM extra ${i} rate
-                long: |
-                    Set the default PWM output frequency for the main outputs
-            type: int32
-            unit: Hz
-            min: 0
-            max: 400
-            instance_start: 1
-            default: 50
+        # UCAN1_ACT_RATE${i}:
+        #     description:
+        #         short: UAVCAN v1 actuator ${i} rate
+        #     type: int32
+        #     unit: Hz
+        #     min: 0
+        #     max: 400
+        #     instance_start: 1
+        #     default: 50
