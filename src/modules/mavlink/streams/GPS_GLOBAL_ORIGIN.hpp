@@ -39,30 +39,13 @@
 class MavlinkStreamGpsGlobalOrigin : public MavlinkStream
 {
 public:
-	const char *get_name() const override
-	{
-		return MavlinkStreamGpsGlobalOrigin::get_name_static();
-	}
+	static MavlinkStream *new_instance(Mavlink *mavlink) { return new MavlinkStreamGpsGlobalOrigin(mavlink); }
 
-	static constexpr const char *get_name_static()
-	{
-		return "GPS_GLOBAL_ORIGIN";
-	}
+	static constexpr const char *get_name_static() { return "GPS_GLOBAL_ORIGIN"; }
+	static constexpr uint16_t get_id_static() { return MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN; }
 
-	static constexpr uint16_t get_id_static()
-	{
-		return MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN;
-	}
-
-	uint16_t get_id() override
-	{
-		return get_id_static();
-	}
-
-	static MavlinkStream *new_instance(Mavlink *mavlink)
-	{
-		return new MavlinkStreamGpsGlobalOrigin(mavlink);
-	}
+	const char *get_name() const override { return get_name_static(); }
+	uint16_t get_id() override { return get_id_static(); }
 
 	unsigned get_size() override
 	{
@@ -71,15 +54,9 @@ public:
 	}
 
 private:
+	explicit MavlinkStreamGpsGlobalOrigin(Mavlink *mavlink) : MavlinkStream(mavlink) {}
+
 	uORB::Subscription _vehicle_local_position_sub{ORB_ID(vehicle_local_position)};
-
-	/* do not allow top copying this class */
-	MavlinkStreamGpsGlobalOrigin(MavlinkStreamGpsGlobalOrigin &) = delete;
-	MavlinkStreamGpsGlobalOrigin &operator = (const MavlinkStreamGpsGlobalOrigin &) = delete;
-
-protected:
-	explicit MavlinkStreamGpsGlobalOrigin(Mavlink *mavlink) : MavlinkStream(mavlink)
-	{}
 
 	bool send() override
 	{
@@ -87,6 +64,7 @@ protected:
 
 		if (_vehicle_local_position_sub.copy(&vehicle_local_position)
 		    && vehicle_local_position.xy_global && vehicle_local_position.z_global) {
+
 			mavlink_gps_global_origin_t msg{};
 			msg.latitude = static_cast<int32_t>(vehicle_local_position.ref_lat * 1e7); // double degree -> int32 degreeE7
 			msg.longitude = static_cast<int32_t>(vehicle_local_position.ref_lon * 1e7); // double degree -> int32 degreeE7
