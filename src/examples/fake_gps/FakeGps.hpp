@@ -31,64 +31,43 @@
  *
  ****************************************************************************/
 
-#ifndef WIND_COV_HPP
-#define WIND_COV_HPP
+#pragma once
 
-#include <uORB/topics/vehicle_local_position.h>
-#include <uORB/topics/wind.h>
+#include <px4_platform_common/defines.h>
+#include <px4_platform_common/module.h>
+#include <px4_platform_common/module_params.h>
+#include <px4_platform_common/posix.h>
+#include <px4_platform_common/px4_work_queue/ScheduledWorkItem.hpp>
+#include <uORB/PublicationMulti.hpp>
+#include <uORB/Subscription.hpp>
+#include <uORB/topics/sensor_gps.h>
 
-class MavlinkStreamWindCov : public MavlinkStream
+class FakeGps : public ModuleBase<FakeGps>, public ModuleParams, public px4::ScheduledWorkItem
 {
 public:
-	static MavlinkStream *new_instance(Mavlink *mavlink) { return new MavlinkStreamWindCov(mavlink); }
+	FakeGps(double latitude_deg = 29.6603018, double longitude_deg = -82.3160500, float altitude_m = 30.1f);
 
-	static constexpr const char *get_name_static() { return "WIND_COV"; }
-	static constexpr uint16_t get_id_static() { return MAVLINK_MSG_ID_WIND_COV; }
+	~FakeGps() override = default;
 
-	const char *get_name() const override { return get_name_static(); }
-	uint16_t get_id() override { return get_id_static(); }
+	/** @see ModuleBase */
+	static int task_spawn(int argc, char *argv[]);
 
-	unsigned get_size() override
-	{
-		return _wind_sub.advertised() ? MAVLINK_MSG_ID_WIND_COV_LEN + MAVLINK_NUM_NON_PAYLOAD_BYTES : 0;
-	}
+	/** @see ModuleBase */
+	static int custom_command(int argc, char *argv[]);
+
+	/** @see ModuleBase */
+	static int print_usage(const char *reason = nullptr);
+
+	bool init();
 
 private:
-	explicit MavlinkStreamWindCov(Mavlink *mavlink) : MavlinkStream(mavlink) {}
+	static constexpr uint32_t SENSOR_INTERVAL_US{1000000 / 5}; // 5 Hz
 
-	uORB::Subscription _wind_sub{ORB_ID(wind)};
-	uORB::Subscription _local_pos_sub{ORB_ID(vehicle_local_position)};
+	void Run() override;
 
-	bool send() override
-	{
-		wind_s wind;
+	uORB::PublicationMulti<sensor_gps_s> _sensor_gps_pub{ORB_ID(sensor_gps)};
 
-		if (_wind_sub.update(&wind)) {
-			mavlink_wind_cov_t msg{};
-
-			msg.time_usec = wind.timestamp;
-
-			msg.wind_x = wind.windspeed_north;
-			msg.wind_y = wind.windspeed_east;
-			msg.wind_z = 0.0f;
-
-			msg.var_horiz = wind.variance_north + wind.variance_east;
-			msg.var_vert = 0.0f;
-
-			vehicle_local_position_s lpos{};
-			_local_pos_sub.copy(&lpos);
-			msg.wind_alt = (lpos.z_valid && lpos.z_global) ? (-lpos.z + lpos.ref_alt) : NAN;
-
-			msg.horiz_accuracy = 0.0f;
-			msg.vert_accuracy = 0.0f;
-
-			mavlink_msg_wind_cov_send_struct(_mavlink->get_channel(), &msg);
-
-			return true;
-		}
-
-		return false;
-	}
+	int32_t _latitude{296603018};   // Latitude in 1e-7 degrees
+	int32_t _longitude{-823160500}; // Longitude in 1e-7 degrees
+	int32_t _altitude{30100};       // Altitude in 1e-3 meters above MSL, (millimetres)
 };
-
-#endif // WIND_COV
