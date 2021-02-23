@@ -114,6 +114,8 @@ public:
 
 	MixingOutput &mixingOutput() { return _mixing_output; }
 
+	const char *get_param_prefix() override { return "UCAN1_ACT"; }
+
 protected:
 	void Run() override;
 private:
