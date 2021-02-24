@@ -50,12 +50,12 @@
 #include "../CanardInterface.hpp"
 #include "../ParamManager.hpp"
 
-class UavcanSubscription
+class UavcanSubscriber
 {
 public:
-	UavcanSubscription() = delete; // Disable default constructor
+	UavcanSubscriber() = delete; // Disable default constructor
 
-	UavcanSubscription(CanardInstance &ins, UavcanParamManager &pmgr, const char *subject_name, uint8_t instance = 0) :
+	UavcanSubscriber(CanardInstance &ins, UavcanParamManager &pmgr, const char *subject_name, uint8_t instance = 0) :
 		_canard_instance(ins), _param_manager(pmgr), _subject_name(subject_name), _instance(instance) { };
 
 	virtual void subscribe() = 0;
