@@ -50,10 +50,10 @@
 #include "../CanardInterface.hpp"
 #include "../ParamManager.hpp"
 
-class UavcanPublication
+class UavcanPublisher
 {
 public:
-	UavcanPublication(CanardInstance &ins, UavcanParamManager &pmgr, const char *uavcan_pname) :
+	UavcanPublisher(CanardInstance &ins, UavcanParamManager &pmgr, const char *uavcan_pname) :
 		_canard_instance(ins), _param_manager(pmgr), _uavcan_param(uavcan_pname) { };
 
 	// Update the uORB Subscription and broadcast a UAVCAN message
