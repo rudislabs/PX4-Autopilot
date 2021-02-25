@@ -42,8 +42,7 @@
 
 #pragma once
 
-/// For use with PR-16808 once merged
-// #include <uORB/topics/output_control.h>
+#include <uORB/topics/output_control.h>
 
 // DS-15 Specification Messages
 #include <reg/drone/service/actuator/common/sp/Vector8_0_1.h>
@@ -81,33 +80,32 @@ public:
 		// Test with Yakut:
 		// export YAKUT_TRANSPORT="pyuavcan.transport.can.CANTransport(pyuavcan.transport.can.media.slcan.SLCANMedia('/dev/serial/by-id/usb-Zubax_Robotics_Zubax_Babel_23002B000E514E413431302000000000-if00', 8, 115200), 42)"
 		// yakut pub 22.reg.drone.service.actuator.common.sp.Vector8.0.1 '{value: [1000, 2000, 3000, 4000, 0, 0, 0, 0]}'
-		PX4_INFO("EscCallback");
+		// PX4_INFO("EscCallback");
 
 		reg_drone_service_actuator_common_sp_Vector8_0_1 esc {};
 		size_t esc_size_in_bits = receive.payload_size;
 		reg_drone_service_actuator_common_sp_Vector8_0_1_deserialize_(&esc, (const uint8_t *)receive.payload,
 				&esc_size_in_bits);
 
-		double val1 = static_cast<double>(esc.value[0]);
-		double val2 = static_cast<double>(esc.value[1]);
-		double val3 = static_cast<double>(esc.value[2]);
-		double val4 = static_cast<double>(esc.value[3]);
-		PX4_INFO("values[0-3] = {%f, %f, %f, %f}", val1, val2, val3, val4);
-		/// do something with the data
+		// double val1 = static_cast<double>(esc.value[0]);
+		// double val2 = static_cast<double>(esc.value[1]);
+		// double val3 = static_cast<double>(esc.value[2]);
+		// double val4 = static_cast<double>(esc.value[3]);
+		// PX4_INFO("values[0-3] = {%f, %f, %f, %f}", val1, val2, val3, val4);
 
-		/// For use with PR-16808 once merged
-		// output_control_s outputs;
+		// Publish to the output_control_mc topic; whatever output module is configured with
+		// FUNCTION_MC_MOTOR{1-8} will accept these values
+		output_control_s outputs;
 
-		// for (uint8_t i = 0; i < 8; i++) {
-		// 	outputs.value[i] = 2.f * (esc.value[i] / 8191.f) - 1.f;
-		// }
+		for (uint8_t i = 0; i < 8; i++) {
+			outputs.value[i] = 2.f * (esc.value[i] / 8191.f) - 1.f;
+		}
 
-		// _output_pub.publish(outputs);
+		_output_pub.publish(outputs);
 	};
 
 private:
-	/// For use with PR-16808 once merged
-	// uORB::Publication<output_control_s> _output_pub{ORB_ID(output_control_mc)};
+	uORB::Publication<output_control_s> _output_pub{ORB_ID(output_control_mc)};
 
 	CanardRxSubscription _canard_sub_readiness;
 };

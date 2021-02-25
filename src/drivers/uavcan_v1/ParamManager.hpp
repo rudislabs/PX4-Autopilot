@@ -65,12 +65,12 @@ private:
 
 	const UavcanParamBinder _uavcan_params[8] {
 		{"uavcan.pub.esc.0.id",   "UCAN1_ESC_PUB"},
-		{"uavcan.pub.servo.0.id", "UCAN1_SERVO_PUB"},
 		{"uavcan.pub.gps.0.id",   "UCAN1_GPS_PUB"},
-		{"uavcan.sub.esc.0.id",   "UCAN1_ESC0_PID"},
-		{"uavcan.sub.gps.0.id",   "UCAN1_GPS0_PID"},
-		{"uavcan.sub.gps.1.id",   "UCAN1_GPS1_PID"},
-		{"uavcan.sub.bms.0.id",   "UCAN1_BMS0_PID"},
-		{"uavcan.sub.bms.1.id",   "UCAN1_BMS1_PID"},
+		{"uavcan.pub.servo.0.id", "UCAN1_SERVO_PUB"},
+		{"uavcan.sub.esc.0.id",   "UCAN1_ESC0_SUB"},
+		{"uavcan.sub.gps.0.id",   "UCAN1_GPS0_SUB"},
+		{"uavcan.sub.gps.1.id",   "UCAN1_GPS1_SUB"},
+		{"uavcan.sub.bms.0.id",   "UCAN1_BMS0_SUB"},
+		{"uavcan.sub.bms.1.id",   "UCAN1_BMS1_SUB"},
 	};
 };
