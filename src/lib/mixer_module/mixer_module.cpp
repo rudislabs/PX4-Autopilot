@@ -575,7 +575,7 @@ bool MixingOutput::update()
 	/* Zero out any outputs which do not have a function assigned */
 	for (unsigned i = 0; i < _max_num_outputs; i++) {
 		if (_assigned_function[i] == output_control_s::FUNCTION_NONE) {
-			_current_output_value[i] = NAN;
+			_current_output_value[i] = 0;
 		}
 	}
 
