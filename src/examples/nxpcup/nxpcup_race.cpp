@@ -70,6 +70,13 @@ Vector copy_vectors(const pixy_vector_s &pixy, uint8_t num) {
 
 roverControl raceTrack(const pixy_vector_s &pixy)
 {
+	/*
+	 * Initialize data structs
+	 * 1. Copy vector data from pixy_vector_s to Vector and store
+	 * 2. Store pixy frame information
+	 * 3. Create a roverControl struct to store speed and steer values.
+	 * 4. Create timer variables to stop the car when no vectors are found.
+	 */
 	Vector main_vec;
 	Vector vec1 = copy_vectors(pixy, 1);
 	Vector vec2 = copy_vectors(pixy, 2);
@@ -85,11 +92,16 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 
 
 	switch (num_vectors) {
+	// If no vectors are found:
 	case 0:
+		// Check to see if this is the first time this case is run
 		if(first_call){
+			// If so, then set no_line_time to current time and set first_call to false
 			no_line_time = hrt_absolute_time();
 			first_call = false;
 		}else{
+			// If first call is false, check to see if we are past 10000us.
+			// If so, stop the car.
 			time_diff = hrt_elapsed_time_atomic(&no_line_time);
 			control.steer = 0.0f;
 			if(time_diff > 10000){
@@ -99,8 +111,9 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 			}
 		}
 		break;
-
+	// If two vectors are found:
 	case 2:
+		// Set first_call to true to reset timer
 		first_call = true;
 
 		/* Very simple steering angle calculation, get average of the x of top two points and 
@@ -108,12 +121,15 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 		main_vec.m_x1 = (vec1.m_x1 + vec2.m_x1) / 2;
 		control.steer = (float)(main_vec.m_x1 - window_center) / (float)frameWidth;
 
+		// Set speed to FAST
 		control.speed = SPEED_FAST;
 		break;
-
+	// If only one vector is found:
 	default:
+		// Set first_call to true to reset timer
 		first_call = true;
-		/* Following the main vector */
+
+		/* Calculate steering angle based on slope of single vector */
 		if (vec1.m_x1 > vec1.m_x0) {
 			x = (float)(vec1.m_x1 - vec1.m_x0) / (float)frameWidth;
 			y = (float)(vec1.m_y1 - vec1.m_y0) / (float)frameHeight;
@@ -130,6 +146,7 @@ roverControl raceTrack(const pixy_vector_s &pixy)
 		}
 		break;
 	}
-
+	
+	// Return speed and steer values.
 	return control;
 }
