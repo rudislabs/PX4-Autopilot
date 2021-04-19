@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# @name NXP Hover Games Drone SITL
+#
+# @type Quadrotor
+#
+# @maintainer Benjamin Perseghetti <bperseghetti@rudislabs.com>
+#
+
+. ${R}etc/init.d/rc.mc_defaults
+
+set MIXER quad_x

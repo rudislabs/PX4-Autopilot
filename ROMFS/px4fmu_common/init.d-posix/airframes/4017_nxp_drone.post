@@ -1,0 +1,12 @@
+#!/bin/sh
+# shellcheck disable=SC2154
+if [ -z "$px4_run_post" ]
+then
+	echo "Not running 4017_nxp_drone.post"
+elif [ $px4_run_post -eq 1 ]
+then
+	echo "Running 4017_nxp_drone.post"
+	micrortps_client start -t UDP -r $((2019+2*px4_instance)) -s $((2020+2*px4_instance))
+else
+	echo "Not running 4017_nxp_drone.post"
+fi
